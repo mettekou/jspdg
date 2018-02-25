@@ -1,9 +1,10 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **
  *          Parse Utilities for target JavaScript                                                               *
- *                                                                                                              *   
+ *                                                                                                              *
  *                                                                                                              *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
 
+var Jipda = require('../compat/jipda.js');
 
 var toreturn = {};
 
@@ -73,7 +74,7 @@ var callback = function (cnt) {
  */
 
 var RPC = function (call, fname, args) {
-    var callnode = Pdg.getCallExpression(call.parsenode),
+    var callnode = Jipda.getCallExpression(call.parsenode),
         parsenode,
         callee;
     if (Aux.isMemberExpression(callnode.callee))

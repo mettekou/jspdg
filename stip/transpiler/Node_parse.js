@@ -2,6 +2,7 @@
  *          CLIENT           *
  * * * * * * * * * * * * * * */
 
+var Jipda = require('../compat/jipda.js');
 
 var toreturn = {};
 
@@ -196,7 +197,7 @@ var callback = function (cnt, syncHandler, orig) {
 var RPC = function (call, fname, args) {
     return {
         parsenode: {
-            _callnode: Pdg.getCallExpression(call),
+            _callnode: Jipda.getCallExpression(call.parsenode),
             type: "ExpressionStatement",
             expression: {
                 type: "CallExpression",

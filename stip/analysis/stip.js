@@ -1,3 +1,5 @@
+var Jipda = require('../compat/jipda.js');
+
 var node = require("../pdg/node.js");
 var EntryNode = node.EntryNode;
 var ObjectEntryNode = node.ObjectEntryNode;
@@ -8,7 +10,7 @@ var DNODES = node.DNODES;
 var graph = require("../pdg/graph.js");
 var PDG = graph.PDG;
 
-var common = require("../../jipda-pdg/common.js");
+var common = require("../compat/common.js");
 var HashMap = common.HashMap;
 var ArraySet = common.ArraySet;
 
@@ -76,7 +78,7 @@ var handleFuncDeclaration = function (graphs, node, upnode) {
         entry = new EntryNode(++graphs.PDG.entIndex, node),
         prevEntry = PDG.entryNode;
 
-    if (Pdg.isConstructor(node, graphs.AST)) {
+    if (Jipda.isConstructor(node, graphs.AST)) {
         return handleConstructorFunction(graphs, node, upnode);
     }
 
@@ -113,7 +115,7 @@ var handleFuncDeclaration = function (graphs, node, upnode) {
 var handleAnonFuncDeclaration = function (graphs, node, entry) {
     var func_node = Aux.isFunExp(node) ? node : node.declarations[0].init;
     if (entry.parsenode && !Aux.isProperty(entry.parsenode) &&
-        Pdg.isConstructor(func_node, graphs.AST)) {
+        Jipda.isConstructor(func_node, graphs.AST)) {
         return handleConstructorFunction(graphs, node, entry);
     }
     var // Statement node of the variable declaration
@@ -442,7 +444,7 @@ var handleUpdateExp = function (graphs, node, upnode) {
 }
 
 var handleNewExp = function (graphs, node, upnode, toadd) {
-    var calledf = Pdg.functionsCalled(node, graphs.AST).values(),
+    var calledf = Jipda.functionsCalled(node, graphs.AST),
         objectentry = graphs.PDG.makeObjEntry(node),
         hasEntryParent = upnode.isEntryNode ||
             (upnode.parsenode && (
@@ -490,7 +492,7 @@ var handleAssignmentExp = function (graphs, node, upnode) {
         },
         ident = getIdent(parsenode.left),
         stmNode = graphs.PDG.makeStm(node),
-        declaration = Aux.isThisExpression(ident) ? false : Pdg.declarationOf(ident, graphs.AST);
+        declaration = Aux.isThisExpression(ident) ? false : Jipda.declarationOf(ident, graphs.AST);
 
 
     stmNode.name = ident.name;
@@ -550,7 +552,7 @@ var handleMemberExpression = function (graphs, node, upnode) {
         addToPDG(stmNode, upnode, graphs);
     /* Object : this - reference to object */
     if (Aux.isIdentifier(object)) {
-        var decl = Pdg.declarationOf(object, graphs.AST);
+        var decl = Jipda.declarationOf(object, graphs.AST);
         var inTryStm = Aux.inTryStatement(graphs.AST, object);
         if (!decl && !Aux.isTryStm(inTryStm)) {
             throw new Exceptions.DeclarationNotFoundError(escodegen.generate(object));
@@ -576,6 +578,7 @@ var handleMemberExpression = function (graphs, node, upnode) {
                 }
                 else {
                     if (objectentry.getMember) {
+                        console.error(objectentry);
                         member = objectentry.getMember(property);
                         if (member)
                             addDataDep(member, hasEntryParent ? stmNode : upnode);
@@ -700,7 +703,7 @@ var handleCallExpression = function (graphs, node, upnode) {
                 else
                     return getObject(member.object)
             },
-            declaration = Pdg.declarationOf(getObject(parsenode.callee), graphs.AST);
+            declaration = Jipda.declarationOf(getObject(parsenode.callee), graphs.AST);
         var hasEntryParent = upnode.isEntryNode || (upnode.parsenode && (Aux.isIfStm(upnode.parsenode) ||
             Aux.isForStm(upnode.parsenode) || Aux.isCatchStm(upnode.parsenode) || Aux.isThrowStm(upnode.parsenode)));
         if (!declaration && analysis)
@@ -936,7 +939,7 @@ var handleCallExpression = function (graphs, node, upnode) {
         }
     }
     var preventry = graphs.PDG.entryNode,
-        calledf = Pdg.functionsCalled(node, graphs.AST).values(),
+        calledf = Jipda.functionsCalled(node, graphs.AST),
         entry = calledf.length > 0 ? graphs.PDG.getEntryNode(calledf[0]) : false,
         handle = function (entrynode) {
             var formals = entrynode.getFormalIn();
@@ -1256,7 +1259,7 @@ var handleIdentifier = function (graphs, node, upnode) {
         declaration, PDG_nodes;
     if (!isPrimitive && analysis) {
 
-        declaration = Pdg.declarationOf(node, graphs.AST);
+        declaration = Jipda.declarationOf(node, graphs.AST);
         if (declaration) {
 
             PDG_nodes = graphs.ATP.getNode(declaration);

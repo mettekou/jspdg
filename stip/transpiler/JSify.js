@@ -8,12 +8,13 @@
  *                                                              *
  ****************************************************************/
 
+var Jipda = require('../compat/jipda.js');
 
 var JSParse = require('./JS_parse.js');
 
 function makeShouldTransform(cps) {
     return function (call) {
-        var parsenode = Pdg.getCallExpression(call.parsenode);
+        var parsenode = Jipda.getCallExpression(call.parsenode);
         if (cps) {
             if (call.primitive || Aux.isNewExp(parsenode)) {
                 return false;
@@ -371,7 +372,7 @@ function transformCallExp(transpiler) {
         actual_ins = node.getActualIn(),
         actual_outs = node.getActualOut(),
         parent = Ast.parent(node.parsenode, transpiler.ast),
-        callexp = Aux.clone(Pdg.getCallExpression(node.parsenode)),
+        callexp = Aux.clone(Jipda.getCallExpression(node.parsenode)),
         callargs = 0,
         transformed, transpiled;
 
@@ -428,7 +429,7 @@ function transformCallExp(transpiler) {
 
         }
 
-        if (Aux.isMemberExpression(Pdg.getCallExpression(parsenode).callee) &&
+        if (Aux.isMemberExpression(Jipda.getCallExpression(parsenode).callee) &&
             callargs < 1 && !transpiler.parseUtils.shouldTransform(transpiler.node) &&
             transformed[1].isRPC) {
 

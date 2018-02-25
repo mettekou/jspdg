@@ -1,3 +1,4 @@
+var Jipda = require('./compat/jipda.js');
 var FlowGraph = require('./analysis/stip.js');
 Handler = require('./error_handling/handler.js');
 pre_analyse = require('./analysis/pre-analysis.js').pre_analyse;
@@ -7,10 +8,9 @@ DefaultPlacementStrategy = require('./placement/default_strategy.js');
 Comments = require('./annotations/annotations.js');
 CheckAnnotations = require('./annotations/check-annotations.js');
 RedStone = require('./redstone/redstone.js');
-Ast = require('../jipda-pdg/ast.js').Ast;
+Ast = require('./compat/ast.js').Ast;
 Aux = require('./aux/aux.js');
 DNODES = require('./PDG/node.js').DNODES;
-Pdg = require('../jipda-pdg/pdg/pdg.js').Pdg;
 escodegen = require('escodegen');
 esprima = require('esprima');
 estraverse = require('estraverse');
@@ -127,7 +127,7 @@ function evalPlacement(source, analysis, nr) {
         for (var varname in graphs.identifiers) {
             if (graphs.identifiers.hasOwnProperty(varname)) {
                 if (storeDeclNode !== undefined) {
-                    var declNode = Pdg.declarationOf(graphs.identifiers[varname], graphs.genAST);
+                    var declNode = Jipda.declarationOf(graphs.identifiers[varname], graphs.genAST);
                     storeDeclNode(varname, declNode);
                 }
             }
@@ -220,7 +220,7 @@ function tiersplit(source, analysis) {
         for (var varname in graphs.identifiers) {
             if (graphs.identifiers.hasOwnProperty(varname)) {
                 if (storeDeclNode !== undefined) {
-                    var declNode = Pdg.declarationOf(graphs.identifiers[varname], graphs.genAST);
+                    var declNode = Jipda.declarationOf(graphs.identifiers[varname], graphs.genAST);
                     storeDeclNode(varname, declNode);
                 }
             }
@@ -326,4 +326,3 @@ var Stip = {
 
 module.exports = Stip;
 global.Stip = Stip;
-
