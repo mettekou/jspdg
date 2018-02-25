@@ -432,7 +432,7 @@ var pre_analyse = function (ast, toGenerate) {
                             }
                             func.body = arg.body;
                             func.params.map(function (param) {
-                                /* Are parameters used in body as object? 
+                                /* Are parameters used in body as object?
                                  Call it with an object literal that has those properties */
                                 Aux.walkAst(func.body, {
                                     pre: function (node) {

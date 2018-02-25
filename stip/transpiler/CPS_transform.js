@@ -11,6 +11,7 @@
  *                          - cps         : boolean indicating whether cps transformations should happen
  */
 
+var Jipda = require('../compat/jipda.js');
 
 var cps_count = 0,
     toreturn = {};
@@ -22,7 +23,7 @@ var arityEquals = require('../PDG/node.js').arityEquals;
 function transformCall(transpiler, upnode, esp_exp) {
     var callnode = transpiler.node,
         asyncCall = transpiler.parseUtils.createRPC(callnode)(callnode, callnode.name, []),
-        parsenode = Pdg.getCallExpression(callnode.parsenode),
+        parsenode = Jipda.getCallExpression(callnode.parsenode),
         trystm = Aux.inTryStatement(transpiler.ast, parsenode),
         callback = transpiler.parseUtils.createCallback(cps_count, Aux.isTryStm(trystm) ? trystm : null, parsenode),
         nodes = transpiler.nodes,
@@ -39,6 +40,7 @@ function transformCall(transpiler, upnode, esp_exp) {
         blockingConstruct = inBlockingConstruct(callnode),
         blockingdeps = [],
         transpiledNode, transformargs, transpiled;
+        debugger;
 
 
     if (parsenode.handlersAsync && parsenode.handlersAsync.length != 0) {
@@ -766,8 +768,9 @@ var getRemainderStms = function (callnode) {
 /* Used to transform to a cps-form from server-> one client */
 var transformReplyCall = function (callnode, nodes, transpiler) {
     var entry = callnode.enclosingEntry(),
-        parsenode = Pdg.getCallExpression(callnode.parsenode),
+        parsenode = Jipda.getCallExpression(callnode.parsenode),
         arity, transformCall;
+    debugger;
     if (entry && entry.isServerNode() && Analysis.isRemoteCall(transpiler.options, callnode)) {
         arity = callnode.arity;
         if (arity && arityEquals(arity, ARITY.ONE)) {

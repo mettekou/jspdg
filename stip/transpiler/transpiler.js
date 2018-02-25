@@ -8,9 +8,9 @@
  *    - transform    : actual transpiler
  *    - setup        : array, statements that should be added in beginning of program
  *    - closeup      : array, statements that should be added at end of program
- * 
+ *
  * Returns: transpiler object, contains all of the above + transpiled node.
- * 
+ *
  */
 
 function createTranspileObject(node, nodes, ast, options, transform, setup, closeup, methods) {
@@ -28,7 +28,7 @@ function createTranspileObject(node, nodes, ast, options, transform, setup, clos
         closeupNode: [],
         warnings: [],
         getTransformed: function () {
-            if (this.transpiledNode.leadingComment) {
+            if (this.transpiledNode && this.transpiledNode.leadingComment) {
                 this.transpiledNode.leadingComment = undefined;
             }
             var nodes = this.setupNode.concat(this.transpiledNode).concat(this.closeupNode);

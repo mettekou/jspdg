@@ -2,6 +2,7 @@
  *               TRANSFORMATIONS FOR REDSTONE                   *
  ****************************************************************/
 
+var Jipda = require('../compat/jipda.js');
 
 // The context Reactify should work on
 var context = null;
@@ -159,7 +160,7 @@ var onAssignment = function onAssignment(transpiler) {
         variableNames.forEach(function (varname) {
             // If they have the same name
             if (variableNameAssignment == varname) {
-                var declNode1 = Pdg.declarationOf(left, genast);
+                var declNode1 = Jipda.declarationOf(left, genast);
                 var declNode2 = context.varname2declNode[varname];
 
                 // And they share the same declaration node: create call to update GUI

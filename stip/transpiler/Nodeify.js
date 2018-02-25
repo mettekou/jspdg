@@ -8,6 +8,8 @@
  ****************************************************************/
 
 
+var Jipda = require('../compat/jipda.js');
+
 var JSify = require('./JSify');
 
 var asyncs = require('../analysis/pre-analysis').asyncs;
@@ -22,7 +24,7 @@ function makeTransformer(transpiler) {
         case 'callbacks':
             transpiler.parseUtils = {
                 createRPC: function (call) {
-                    var parsenode = Pdg.getCallExpression(call.parsenode);
+                    var parsenode = Jipda.getCallExpression(call.parsenode);
                     if (Aux.isMemberExpression(parsenode.callee) &&
                         asyncs.indexOf(parsenode.callee.object.name) >= 0)
                         return JSParse.RPC;
@@ -53,7 +55,7 @@ var shouldTransformFunc = function (options) {
 
 var shouldTransform = function (options) {
     return function (call) {
-        var parsenode = Pdg.getCallExpression(call.parsenode);
+        var parsenode = Jipda.getCallExpression(call.parsenode);
         if (call.primitive || Aux.isNewExp(parsenode)) {
             return false;
         }
@@ -356,7 +358,7 @@ function nodeifyFunExp(transpiler) {
                 /* Separate localbody from exposed method body */
                 if (transpiled.localTranspiledNode)
                     localbody.push(transpiled.localTranspiledNode);
-                else if (!transpiled.transpiledNode.__transformed)
+                else if (!transpiled || !transpiled.transpiledNode || !transpiled.transpiledNode.__transformed)
                     localbody.push(Aux.clone(n.parsenode));
                 else if (Aux.isRetStm(n.parsenode) && !transpiled.transpiledNode.__transformed)
                     localbody.push(Aux.clone(n.parsenode));
@@ -571,7 +573,7 @@ function nodeifyCallExp(transpiler) {
                 transpiler.transpiledNode = transpiled[1].parsenode;
                 transpiled = NodeParse.createBroadcast(node.parsenode);
                 transpiled.setName('"' + node.name + '"');
-                transpiled.addArgs(Pdg.getCallExpression(node.parsenode).arguments)
+                transpiled.addArgs(Jipda.getCallExpression(node.parsenode).arguments)
                 transpiler.localTranspiledNode = transpiled.parsenode;
                 transpiler.transpiledNode.__transformed = true;
                 return transpiler;
@@ -579,7 +581,7 @@ function nodeifyCallExp(transpiler) {
             else {
                 transpiled = NodeParse.createBroadcast(node.parsenode);
                 transpiled.setName('"' + node.name + '"');
-                transpiled.addArgs(Pdg.getCallExpression(node.parsenode).arguments);
+                transpiled.addArgs(Jipda.getCallExpression(node.parsenode).arguments);
             }
             if (node.parsenode.handlersAsync && node.parsenode.handlersAsync.length != 0) {
                 var handlerCtr = node.parsenode.handlersAsync.length,
