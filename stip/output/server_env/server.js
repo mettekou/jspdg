@@ -3,8 +3,6 @@ var ServerData = require('./rpc/data-server.js');
 var server = new ServerData(app, 3000);
 app.use('/client', express.static(__dirname + '/../client_env/js'));
 app.use('/', express.static(__dirname + '/../client_env'));
-var fs = require('fs');
-var later = require('later');
 var meetings;
 var tasks;
 var courses;
@@ -12,8 +10,8 @@ function Meeting(id, title, notes, time) {
     function Meeting(title, notes, time) {
         this.title = title;
         this.notes = notes;
-        this.start = new Date(time).getTime();
-        this.end = new Date(this.start + 2 * 60 * 60 * 1000);
+        this.start = new Date().getTime();
+        this.end = addMinutes(new Date(time), 120);
     }
     return server.makeReplicatedObject(id, new Meeting(title, notes, time));
 }
@@ -31,25 +29,21 @@ function Course(id, title, duration, time) {
         this.duration = duration;
         this.time = time;
     }
-    return server.makeReplicatedObject(id, new Course(title, duration, time));
+    return server.makeObservableObject(id, new Course(title, duration, time));
 }
 meetings = server.makeReplicatedObject('meetings', []);
 tasks = server.makeReplicatedObject('tasks', []);
 courses = server.makeReplicatedObject('courses', []);
 var dataCourses;
 var coursesJSON;
-tasks.push(new Task(false, 'Learn uni-corn!'));
-function anonf1(json) {
-    var course;
-    if (!isValidTimeDescr(json.time))
-        throw new Error('Wrong time description in course');
-    course = new Course('course', json.title, json.duration, json.time);
-    courses.push(course);
+addTask('Learn uni-corn!', 10);
+function anonf3(json) {
+    addCourse(json.title, json.duration, json.time);
 }
 fs.readFile('data.json', function (err1, res1) {
     dataCourses = res1;
     coursesJSON = JSON.parse(dataCourses);
-    coursesJSON.forEach(anonf1);
+    coursesJSON.forEach(anonf3);
 });
 function isValidTimeDescr(descr) {
     var sched;
@@ -64,7 +58,7 @@ function happenedInPast(date) {
 function addMinutes(date, minutes) {
     var ms;
     ms = date.getTime();
-    return ms + minutes * 60000;
+    return new Date(ms + minutes * 60000);
 }
 function calculateNext(timeDescription) {
     var parsed;
@@ -100,3 +94,82 @@ function happenedToday(date1, date2) {
     return year1 == year2 && month1 == month2 && day1 == day2;
 }
 later.date.localTime();
+var activityToday;
+var latestUpdate;
+function updateActivity() {
+    var now;
+    now = new Date();
+    if (latestUpdate) {
+        if (happenedToday(latestUpdate, now)) {
+            activityToday = activityToday + 1;
+            latestUpdate = now;
+        } else {
+            activityToday = 1;
+            latestUpdate = now;
+        }
+    } else {
+        latestUpdate = now;
+        activityToday = activityToday + 1;
+    }
+}
+function processMeetingMonths() {
+    var currYear;
+    var months;
+    var meetings;
+    currYear = new Date().getFullYear();
+    function anonf4(meeting) {
+        var date;
+        var month;
+        var year;
+        date = new Date();
+        month = date.getMonth();
+        year = date.getFullYear();
+        if (year == currYear)
+            months[month] = months[month] + 1;
+    }
+    months = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ];
+    meetings = getMeetings();
+    meetings.forEach(anonf4);
+    return months;
+}
+function processTasksStatus() {
+    var todo;
+    var finished;
+    var inprogress;
+    var tasks;
+    todo = 0;
+    finished = 0;
+    function anonf5(task) {
+        if (task.status < 0) {
+            todo++;
+        } else if (task.status > 0) {
+            finished++;
+        } else {
+            inprogress++;
+        }
+    }
+    inprogress = 0;
+    tasks = getTasks();
+    tasks.forEach(anonf5);
+    return [
+        todo,
+        finished,
+        inprogress
+    ];
+}
+activityToday = 0;
+latestUpdate = false;
+server.expose({});

@@ -59,17 +59,17 @@ function getCourses() {
 }
 function addTask(title, priority) {
     var task;
-    task = new Task('task', title, priority);
+    task = new Task();
     tasks.push(task);
 }
 function addMeeting(title, notes, time) {
     var meeting;
-    meeting = new Meeting('meeting', title, notes, time);
+    meeting = new Meeting();
     meetings.push(meeting);
 }
 function addCourse(title, duration, time) {
     var course;
-    course = new Course('course', title, duration, time);
+    course = new Course();
     courses.push(course);
 }
 function sortMeetings() {
@@ -96,55 +96,6 @@ function sortTasks() {
     tasks = getTasks();
     tasks.sort(anonf2);
 }
-function isValidTimeDescr(descr) {
-    var sched;
-    sched = later.parse.text(descr);
-    return sched.error === -1;
-}
-function happenedInPast(date) {
-    var now;
-    now = new Date().getTime();
-    return date < now;
-}
-function addMinutes(date, minutes) {
-    var ms;
-    ms = date.getTime();
-    return new Date(ms + minutes * 60000);
-}
-function calculateNext(timeDescription) {
-    var parsed;
-    var s;
-    var next;
-    parsed = later.parse.text(timeDescription);
-    s = later.schedule(parsed);
-    next = s.next(1);
-    return new Date(next);
-}
-function calculatePrevious(timeDescription) {
-    var parsed;
-    var s;
-    var next;
-    parsed = later.parse.text(timeDescription);
-    s = later.schedule(parsed);
-    next = s.prev(1);
-    return new Date(next);
-}
-function happenedToday(date1, date2) {
-    var year1;
-    var year2;
-    var month2;
-    var month1;
-    var day1;
-    var day2;
-    year1 = date1.getFullYear();
-    year2 = date2.getFullYear();
-    month2 = date2.getMonth();
-    month1 = date1.getMonth();
-    day1 = date1.getDay();
-    day2 = date2.getDay();
-    return year1 == year2 && month1 == month2 && day1 == day2;
-}
-later.date.localTime();
 var activityToday;
 var latestUpdate;
 function updateActivity() {
@@ -181,7 +132,7 @@ function processMeetingMonths() {
         var date;
         var month;
         var year;
-        date = new Date(meeting.start);
+        date = new Date();
         month = date.getMonth();
         year = date.getFullYear();
         if (year == currYear)
@@ -279,7 +230,7 @@ function editMeetingUI(ev) {
         REDSTONE.updateVariable('meetingNotes', meetingNotes);
     }());
     (function () {
-        meetingDate = new Date(dateS);
+        meetingDate = new Date();
         REDSTONE.updateVariable('meetingDate', meetingDate);
     }());
     sortMeetings();

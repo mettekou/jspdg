@@ -9,8 +9,13 @@
   },
   "dependencies": {
     "chalk": "^1.1.3",
-    "escodegen": "^1.8.1",
+    "compare-ast": "^0.2.0",
+    "es6-shim": "^0.35.3",
+    "escodegen": "^1.9.0",
+    "esprima": "^2.7.0",
+    "estraverse": "^4.2.0",
     "genetic-js": "^0.1.14",
+    "performance-now": "^2.1.0",
     "randomstring": "^1.1.5"
   },
   "devDependencies": {

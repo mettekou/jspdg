@@ -648,7 +648,6 @@ suite('CPS transform', function () {
 
     test('function', function () {
         var ast = cpsTransform('function foo (x) {return x * 2} foo(42);', true);
-        console.log(ast);
         compareAst(escodegen.generate(ast.nosetup),
             'function foo(x, _v1_) {return _v1_(null, x * 2)} foo(42, function (_v2_, _v3_) {})',
             {varPattern: /_v\d_/})
@@ -711,7 +710,6 @@ suite('CPS transform', function () {
     });
     test('blocking if', function () {
         var ast = cpsTransform('function foo(x) {return x} /*@blocking*/if(true) {foo(0)} else {foo(1)} console.log("done")', true);
-        console.log(escodegen.generate(ast.nosetup));
         compareAst(escodegen.generate(ast.nosetup),
             'function foo(x, _v1_) {return _v1_(null, x)} if(true) {foo(0, function (_v2_, _v3_) {console.log("done")})} else {foo(1, function (_v4_, _v5_) {console.log("done")})}',
             {varPattern: /_v\d_/})

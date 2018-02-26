@@ -1,5 +1,4 @@
-/*  @require [fs later]
-	@config data: server, setup: server, displayMeetings: client, displayTasks: client, displaySchedule: client, displayCharts: client
+/* 	@config data: server, setup: server, displayMeetings: client, displayTasks: client, displaySchedule: client, displayCharts: client
 	@slice data
 */
 {
@@ -90,9 +89,6 @@
 	var dataCourses = fs.readFile("data.json");
 	var coursesJSON = JSON.parse(dataCourses);
 	coursesJSON.forEach(function (json) {
-		if (!isValidTimeDescr(json.time)) {
-			throw new Error('Wrong time description in course');
-		}
 		addCourse(json.title, json.duration, json.time);
 	})
 }
